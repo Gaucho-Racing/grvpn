@@ -6,7 +6,7 @@ import (
 )
 
 func GetVpnProfile(clientID string) string {
-	cmd := exec.Command("./openvpn-helper.sh", "view", clientID)
+	cmd := exec.Command("sudo", "./openvpn-helper.sh", "view", clientID)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		utils.SugarLogger.Errorf("Error executing command: %v", err)
@@ -16,7 +16,7 @@ func GetVpnProfile(clientID string) string {
 }
 
 func CreateVpnProfile(clientID string) string {
-	cmd := exec.Command("./openvpn-helper.sh", "add", clientID)
+	cmd := exec.Command("sudo", "./openvpn-helper.sh", "add", clientID)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		utils.SugarLogger.Errorf("Error executing command: %v", err)
@@ -26,7 +26,7 @@ func CreateVpnProfile(clientID string) string {
 }
 
 func RevokeVpnProfile(clientID string) string {
-	cmd := exec.Command("./openvpn-helper.sh", "revoke", clientID)
+	cmd := exec.Command("sudo", "./openvpn-helper.sh", "revoke", clientID)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		utils.SugarLogger.Errorf("Error executing command: %v", err)
