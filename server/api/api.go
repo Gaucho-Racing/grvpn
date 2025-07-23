@@ -36,6 +36,13 @@ func InitializeRoutes(router *gin.Engine) {
 	router.GET("/users", GetAllUsers)
 	router.GET("/users/@me", GetCurrentUser)
 	router.GET("/users/:userID", GetUser)
+	router.GET("/users/:userID/clients", GetAllClientsByUser)
+	router.GET("/users/:userID/clients/expired", GetAllExpiredClientsByUser)
+	router.GET("/clients", GetAllClients)
+	router.GET("/clients/:id", GetClientByID)
+	router.GET("/clients/:id/download", DownloadClientProfile)
+	router.POST("/clients", CreateClient)
+	router.DELETE("/clients/:id", DeleteClient)
 }
 
 func AuthChecker() gin.HandlerFunc {

@@ -1,9 +1,11 @@
 package service
 
 import (
+	"errors"
 	"grvpn/database"
 	"grvpn/model"
 	"grvpn/utils"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -31,7 +33,7 @@ func GetClientByID(id string) model.VpnClient {
 
 func GetAllClientsByUser(userID string) []model.VpnClient {
 	var clients []model.VpnClient
-	result := database.DB.Find(&clients, "user_id = ?", userID)
+	result := database.DB.Find(&clients, "user_id = ? AND expires_at >= NOW()", userID)
 	if result.Error != nil {
 		utils.SugarLogger.Errorf("Error getting all clients by user: %v", result.Error)
 		return []model.VpnClient{}
@@ -52,19 +54,27 @@ func GetAllExpiredClientsByUser(userID string) []model.VpnClient {
 func CreateClient(client model.VpnClient) (model.VpnClient, error) {
 	if client.ID == "" {
 		client.ID = uuid.New().String()
-		client.ExpiresAt = time.Now().Add(time.Hour * 24)
+		client.ExpiresAt = time.Now().Add(time.Hour * 8)
 	}
 
 	if database.DB.Where("id = ?", client.ID).Updates(&client).RowsAffected == 0 {
+		// Create VPN profile
+		output := CreateVpnProfile(client.ID)
+		output2 := GetVpnProfile(client.ID)
+		if strings.Contains(output2, "not found") {
+			utils.SugarLogger.Errorf("Error creating VPN profile: %v", output)
+			return model.VpnClient{}, errors.New("error creating VPN profile: " + output)
+		}
+		utils.SugarLogger.Infof("VPN profile created: %v", output2)
+		client.ProfileText = output2
+		client.ProfileLocation = "/home/ubuntu/" + client.ID + ".ovpn"
+
 		utils.SugarLogger.Infof("New client created with id: %s", client.ID)
 		result := database.DB.Create(&client)
 		if result.Error != nil {
 			utils.SugarLogger.Errorf("Error creating client: %v", result.Error)
 			return model.VpnClient{}, result.Error
 		}
-		// Create VPN profile
-		output := CreateVpnProfile(client.ID)
-		println(output)
 
 		return client, nil
 	} else {
@@ -79,14 +89,20 @@ func DeleteClient(id string) error {
 		utils.SugarLogger.Errorf("Error deleting client: %v", result.Error)
 		return result.Error
 	}
+	RevokeVpnProfile(id)
 	return nil
 }
 
-func DeleteAllExpiredClients() error {
-	result := database.DB.Delete(&model.VpnClient{}, "expires_at < NOW()")
-	if result.Error != nil {
-		utils.SugarLogger.Errorf("Error deleting all expired clients: %v", result.Error)
-		return result.Error
+func DeleteAllExpiredClients() {
+	deletedCount := 0
+	clients := GetAllExpiredClientsByUser("test")
+	for _, client := range clients {
+		err := DeleteClient(client.ID)
+		if err != nil {
+			utils.SugarLogger.Errorf("Error deleting expired client: %v", err)
+		} else {
+			deletedCount++
+		}
 	}
-	return nil
+	utils.SugarLogger.Infof("Deleted %d expired clients", deletedCount)
 }

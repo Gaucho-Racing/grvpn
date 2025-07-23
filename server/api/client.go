@@ -4,6 +4,7 @@ import (
 	"grvpn/model"
 	"grvpn/service"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -44,4 +45,23 @@ func CreateClient(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, client)
+}
+
+func DeleteClient(c *gin.Context) {
+	err := service.DeleteClient(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Client deleted"})
+}
+
+func DownloadClientProfile(c *gin.Context) {
+	profile := service.GetVpnProfile(c.Param("id"))
+	if strings.Contains(profile, "not found") {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Profile not found"})
+		return
+	}
+	c.Header("Content-Disposition", "attachment; filename=grvpn.ovpn")
+	c.Data(http.StatusOK, "application/octet-stream", []byte(profile))
 }
