@@ -43,6 +43,7 @@ func InitializeRoutes(router *gin.Engine) {
 	router.GET("/clients/:id/download", DownloadClientProfile)
 	router.POST("/clients", CreateClient)
 	router.DELETE("/clients/:id", DeleteClient)
+	router.GET("/test", TestConnection)
 }
 
 func AuthChecker() gin.HandlerFunc {
