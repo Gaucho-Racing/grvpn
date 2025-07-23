@@ -10,6 +10,8 @@ import (
 )
 
 func GetAllClients(c *gin.Context) {
+	Require(c, RequestUserHasRole(c, "d_admin"))
+
 	clients := service.GetAllClients()
 	c.JSON(http.StatusOK, clients)
 }
@@ -20,15 +22,31 @@ func GetClientByID(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Client not found"})
 		return
 	}
+
+	Require(c, Any(
+		RequestUserHasRole(c, "d_admin"),
+		RequestUserHasID(c, client.UserID),
+	))
+
 	c.JSON(http.StatusOK, client)
 }
 
 func GetAllClientsByUser(c *gin.Context) {
+	Require(c, Any(
+		RequestUserHasRole(c, "d_admin"),
+		RequestUserHasID(c, c.Param("userID")),
+	))
+
 	clients := service.GetAllClientsByUser(c.Param("userID"))
 	c.JSON(http.StatusOK, clients)
 }
 
 func GetAllExpiredClientsByUser(c *gin.Context) {
+	Require(c, Any(
+		RequestUserHasRole(c, "d_admin"),
+		RequestUserHasID(c, c.Param("userID")),
+	))
+
 	clients := service.GetAllExpiredClientsByUser(c.Param("userID"))
 	c.JSON(http.StatusOK, clients)
 }
@@ -39,6 +57,12 @@ func CreateClient(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
+
+	Require(c, Any(
+		RequestUserHasRole(c, "d_admin"),
+		RequestUserHasID(c, client.UserID),
+	))
+
 	client, err := service.CreateClient(client)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -48,7 +72,18 @@ func CreateClient(c *gin.Context) {
 }
 
 func DeleteClient(c *gin.Context) {
-	err := service.DeleteClient(c.Param("id"))
+	client := service.GetClientByID(c.Param("id"))
+	if client.ID == "" {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Client not found"})
+		return
+	}
+
+	Require(c, Any(
+		RequestUserHasRole(c, "d_admin"),
+		RequestUserHasID(c, client.UserID),
+	))
+
+	err := service.DeleteClient(client.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -57,7 +92,18 @@ func DeleteClient(c *gin.Context) {
 }
 
 func DownloadClientProfile(c *gin.Context) {
-	profile := service.GetVpnProfile(c.Param("id"))
+	client := service.GetClientByID(c.Param("id"))
+	if client.ID == "" {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Client not found"})
+		return
+	}
+
+	Require(c, Any(
+		RequestUserHasRole(c, "d_admin"),
+		RequestUserHasID(c, client.UserID),
+	))
+
+	profile := service.GetVpnProfile(client.ID)
 	if strings.Contains(profile, "not found") {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Profile not found"})
 		return

@@ -140,9 +140,9 @@ func GetRequestUserID(c *gin.Context) string {
 }
 
 func GetRequestUserEmail(c *gin.Context) string {
-	email, exists := c.Get("Auth-Email")
-	if !exists {
+	user, err := service.GetUser(GetRequestUserID(c))
+	if err != nil {
 		return ""
 	}
-	return email.(string)
+	return user.Email
 }

@@ -1,9 +1,9 @@
 package main
 
 import (
+	"grvpn/api"
 	"grvpn/config"
 	"grvpn/database"
-	"grvpn/model"
 	"grvpn/service"
 	"grvpn/utils"
 )
@@ -18,12 +18,10 @@ func main() {
 	service.InitializeKeys()
 	service.PingSentinel()
 
-	service.CreateClient(model.VpnClient{})
-
-	// router := api.SetupRouter()
-	// api.InitializeRoutes(router)
-	// err := router.Run(":" + config.Port)
-	// if err != nil {
-	// 	utils.SugarLogger.Fatalln(err)
-	// }
+	router := api.SetupRouter()
+	api.InitializeRoutes(router)
+	err := router.Run(":" + config.Port)
+	if err != nil {
+		utils.SugarLogger.Fatalln(err)
+	}
 }
