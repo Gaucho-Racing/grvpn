@@ -3,6 +3,7 @@ package main
 import (
 	"grvpn/api"
 	"grvpn/config"
+	"grvpn/database"
 	"grvpn/service"
 	"grvpn/utils"
 )
@@ -13,6 +14,7 @@ func main() {
 	utils.VerifyConfig()
 	defer utils.Logger.Sync()
 
+	database.InitializeDB()
 	service.InitializeKeys()
 	service.PingSentinel()
 

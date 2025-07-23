@@ -59,10 +59,6 @@ func AuthChecker() gin.HandlerFunc {
 					c.Set("Auth-Scope", claims.Scope)
 				}
 			}
-		} else {
-			if c.FullPath() != "/:shortCode" && c.FullPath() != "/ping" && c.FullPath() != "/auth/login" {
-				c.AbortWithStatusJSON(401, gin.H{"message": "you are not authorized to access this resource"})
-			}
 		}
 		c.Next()
 	}

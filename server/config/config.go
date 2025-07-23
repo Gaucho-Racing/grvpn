@@ -8,6 +8,12 @@ var Version = "1.0.0"
 var Env = os.Getenv("ENV")
 var Port = os.Getenv("PORT")
 
+var DatabaseHost = os.Getenv("DATABASE_HOST")
+var DatabasePort = os.Getenv("DATABASE_PORT")
+var DatabaseUser = os.Getenv("DATABASE_USER")
+var DatabasePassword = os.Getenv("DATABASE_PASSWORD")
+var DatabaseName = os.Getenv("DATABASE_NAME")
+
 var Sentinel = struct {
 	Url          string
 	JwksUrl      string
