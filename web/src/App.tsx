@@ -28,8 +28,10 @@ function App() {
   }, []);
 
   React.useEffect(() => {
-    getClients();
-    getExpiredClients();
+    if (currentUser.id != "") {
+      getClients();
+      getExpiredClients();
+    }
   }, [currentUser.id]);
 
   const checkAuth = async () => {

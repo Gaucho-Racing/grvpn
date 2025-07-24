@@ -11,8 +11,6 @@ import { logout } from "@/lib/auth";
 import { useUser } from "@/lib/store";
 import { BACKEND_URL } from "@/consts/config";
 import axios from "axios";
-import { notify } from "@/lib/notify";
-import { getAxiosErrorMessage } from "@/lib/axios-error-handler";
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 
