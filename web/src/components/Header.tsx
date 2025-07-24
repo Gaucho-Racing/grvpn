@@ -25,7 +25,8 @@ const Header = (props: HeaderProps) => {
     >
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center p-4">
-          <h1>Jiffy</h1>
+          <img src="/logo/grvpn.png" width={50} height={50} alt="Logo" />
+          <h1 className="ml-4">grvpn</h1>
         </div>
         <div className="mr-4 flex flex-row p-4">
           <DropdownMenu>

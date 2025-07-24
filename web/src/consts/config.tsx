@@ -1,5 +1,5 @@
 export const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL ?? "https://vpn-api.gauchoracing.com";
+  import.meta.env.VITE_BACKEND_URL ?? "https://vpn.gauchoracing.com/api";
 
 export const SENTINEL_OAUTH_BASE_URL =
   "https://sso.gauchoracing.com/oauth/authorize";
