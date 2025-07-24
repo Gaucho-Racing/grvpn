@@ -1,10 +1,13 @@
 package api
 
 import (
+	"fmt"
 	"grvpn/model"
 	"grvpn/service"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -98,10 +101,25 @@ func DownloadClientProfile(c *gin.Context) {
 		return
 	}
 
-	Require(c, Any(
-		RequestUserHasRole(c, "d_admin"),
-		RequestUserHasID(c, client.UserID),
-	))
+	if c.Query("token") != "" {
+		uid := strings.Split(c.Query("token"), "-")[0]
+		timestamp, err := strconv.Atoi(strings.Split(c.Query("token"), "-")[1])
+		if uid != client.UserID || err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
+			return
+		}
+
+		tokenExpiry := time.Unix(int64(timestamp), 0).Add(300 * time.Second)
+		if time.Now().After(tokenExpiry) {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": fmt.Sprintf("Token expired %ds ago", int(time.Since(tokenExpiry).Seconds()))})
+			return
+		}
+	} else {
+		Require(c, Any(
+			RequestUserHasRole(c, "d_admin"),
+			RequestUserHasID(c, client.UserID),
+		))
+	}
 
 	profile := service.GetVpnProfile(client.ID)
 	if strings.Contains(profile, "not found") {
