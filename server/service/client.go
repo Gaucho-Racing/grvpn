@@ -21,6 +21,16 @@ func GetAllClients() []model.VpnClient {
 	return clients
 }
 
+func GetAllExpiredClients() []model.VpnClient {
+	var clients []model.VpnClient
+	result := database.DB.Find(&clients, "expires_at < NOW()")
+	if result.Error != nil {
+		utils.SugarLogger.Errorf("Error getting all expired clients: %v", result.Error)
+		return []model.VpnClient{}
+	}
+	return clients
+}
+
 func GetClientByID(id string) model.VpnClient {
 	var client model.VpnClient
 	result := database.DB.First(&client, "id = ?", id)
@@ -95,7 +105,7 @@ func DeleteClient(id string) error {
 
 func DeleteAllExpiredClients() {
 	deletedCount := 0
-	clients := GetAllExpiredClientsByUser("test")
+	clients := GetAllExpiredClients()
 	for _, client := range clients {
 		err := DeleteClient(client.ID)
 		if err != nil {
