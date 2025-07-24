@@ -27,4 +27,8 @@ func VerifyConfig() {
 		config.DatabasePassword = "password"
 		SugarLogger.Infof("DATABASE_PASSWORD is not set, defaulting to %s", config.DatabasePassword)
 	}
+	if config.DatabaseName == "" {
+		config.DatabaseName = "grvpn"
+		SugarLogger.Infof("DATABASE_NAME is not set, defaulting to %s", config.DatabaseName)
+	}
 }
