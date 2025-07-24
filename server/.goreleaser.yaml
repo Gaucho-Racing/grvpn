@@ -10,10 +10,6 @@ version: 2
 
 project_name: server
 
-monorepo:
-  tag_prefix: server/
-  dir: server
-
 before:
   hooks:
     - go mod tidy
