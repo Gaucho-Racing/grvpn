@@ -8,7 +8,7 @@
 
 version: 2
 
-project_name: server
+project_name: grvpn_server
 
 before:
   hooks:

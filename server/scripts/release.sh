@@ -35,8 +35,8 @@ then
 fi
 
 # Create a release tag
-git tag -s server/v$VERSION -m "Release version $VERSION"
-git push origin server/v$VERSION
+git tag -s v$VERSION -m "Release version $VERSION"
+git push origin v$VERSION
 
 # Create a release
 goreleaser release
