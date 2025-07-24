@@ -24,11 +24,13 @@ function App() {
   const [expiredClients, setExpiredClients] = useState<Client[]>([]);
 
   React.useEffect(() => {
-    checkAuth().then(() => {
-      getClients();
-      getExpiredClients();
-    });
+    checkAuth().then(() => {});
   }, []);
+
+  React.useEffect(() => {
+    getClients();
+    getExpiredClients();
+  }, [currentUser.id]);
 
   const checkAuth = async () => {
     const currentRoute = window.location.pathname + window.location.search;
