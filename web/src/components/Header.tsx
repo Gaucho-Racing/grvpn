@@ -40,7 +40,7 @@ const Header = (props: HeaderProps) => {
       const response = await axios.get(`${BACKEND_URL}/test`);
       setConnected(response.data);
     } catch (error: any) {
-      notify.error(getAxiosErrorMessage(error));
+      setConnected(error.response.data);
       console.error(error);
     }
   };
