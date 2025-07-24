@@ -39,6 +39,6 @@ git tag -s v$VERSION -m "Release version $VERSION"
 git push origin v$VERSION
 
 # Create a release
-goreleaser release
+goreleaser release --clean
 
 echo "Package released successfully for version $VERSION"
