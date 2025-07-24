@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -a
+. .env
+
 # Get the version from config.go
 VERSION=$(grep 'var Version =' config/config.go | cut -d '"' -f 2)
 
@@ -21,6 +24,13 @@ fi
 if ! command -v goreleaser &> /dev/null
 then
     echo "goreleaser is not installed. Please install it to proceed."
+    exit 1
+fi
+
+# Check if GITHUB_TOKEN is set
+if [ -z "$GITHUB_TOKEN" ]
+then
+    echo "GITHUB_TOKEN is not set. Please set it to proceed."
     exit 1
 fi
 
