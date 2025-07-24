@@ -25,7 +25,10 @@ const Header = (props: HeaderProps) => {
   const navigate = useNavigate();
   const currentUser = useUser();
 
-  const [connected, setConnected] = useState({ connected: false, ip: "" });
+  const [connected, setConnected] = useState({
+    connected: false,
+    ip: "0.0.0.0",
+  });
 
   React.useEffect(() => {
     const interval = setInterval(checkConnection, 2000);
