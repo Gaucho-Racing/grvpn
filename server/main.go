@@ -4,6 +4,7 @@ import (
 	"grvpn/api"
 	"grvpn/config"
 	"grvpn/database"
+	"grvpn/jobs"
 	"grvpn/service"
 	"grvpn/utils"
 )
@@ -17,6 +18,8 @@ func main() {
 	database.InitializeDB()
 	service.InitializeKeys()
 	service.PingSentinel()
+
+	jobs.RegisterExpireJob()
 
 	router := api.SetupRouter()
 	api.InitializeRoutes(router)
