@@ -20,7 +20,9 @@ func RegisterExpireJob() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			service.DeleteAllExpiredClients()
+			for _, client := range service.GetAllExpiredClients() {
+				service.RevokeVpnProfile(client.ID)
+			}
 		}()
 		wg.Wait()
 		utils.SugarLogger.Infoln("Finished expire job!")
