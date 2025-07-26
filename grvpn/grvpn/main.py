@@ -93,6 +93,8 @@ def connect():
         typer.echo("Failed to connect.")
         raise typer.Exit(code=1)
 
+    OpenVPN.set_dns()
+
     connected_time = time.time()
     ip = "0.0.0.0"
     ip = VPN.test_connection()['ip']
@@ -109,6 +111,8 @@ def connect():
             proc.send_signal(signal.SIGINT)
             proc.wait()
 
+    OpenVPN.flush_routes()
+    OpenVPN.reset_dns()
     typer.echo("Disconnected.")
 
 def render_login(user):

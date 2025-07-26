@@ -47,3 +47,17 @@ class OpenVPN:
             subprocess.run(f"sudo ifconfig utun{i} down", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run("sudo route delete -net 0.0.0.0/1 10.8.0.1", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run("sudo route delete -net 128.0.0.0/1 10.8.0.1", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    @staticmethod
+    def set_dns():
+        if sys.platform == "darwin":
+            subprocess.run("sudo networksetup -setdnsservers Wi-Fi 10.8.0.1", shell=True)
+        elif sys.platform == "linux":
+            pass
+    
+    @staticmethod
+    def reset_dns():
+        if sys.platform == "darwin":
+            subprocess.run("sudo networksetup -setdnsservers Wi-Fi empty", shell=True)
+        elif sys.platform == "linux":
+            pass
