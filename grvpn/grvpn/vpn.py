@@ -3,7 +3,7 @@ import os
 import json
 import requests
 
-from cli.auth import Sentinel
+from grvpn.auth import Sentinel
 
 class VPN:
 

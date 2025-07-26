@@ -11,9 +11,9 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.align import Align
 from rich.text import Text
-from cli.openvpn import OpenVPN
-from cli.vpn import VPN
-from cli.auth import Sentinel, SENTINEL_AUTH_URL
+from grvpn.openvpn import OpenVPN
+from grvpn.vpn import VPN
+from grvpn.auth import Sentinel, SENTINEL_AUTH_URL
 
 app = typer.Typer()
 console = Console()
@@ -110,9 +110,6 @@ def connect():
 
     typer.echo("Disconnected.")
 
-if __name__ == "__main__":
-    app()
-
 def render_login(user):
     text = Text()
     text.append(f"Logged in as {user['email']}\n\n", style="bold magenta")
@@ -141,3 +138,6 @@ def render_connection(ip, connected_time, expires_at):
     text.append("\nPress Ctrl+C to disconnect", style="dim")
 
     return Panel(Align.left(text))
+
+if __name__ == "__main__":
+    app()
