@@ -96,6 +96,7 @@ def connect():
     connected_time = time.time()
     ip = "0.0.0.0"
     ip = VPN.test_connection()['ip']
+    expires_at = datetime.fromisoformat(client["expires_at"].replace("Z", "+00:00"))
 
     try:
         with Live(render_connection(ip, connected_time, expires_at), refresh_per_second=1, console=console) as live:
