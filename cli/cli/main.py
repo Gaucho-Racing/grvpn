@@ -15,7 +15,7 @@ from cli.openvpn import OpenVPN
 from cli.vpn import VPN
 from cli.auth import Sentinel, SENTINEL_AUTH_URL
 
-app = typer.Typer(help="GRVPN CLI")
+app = typer.Typer()
 console = Console()
 
 @app.command()
@@ -73,6 +73,14 @@ def connect():
         profile = VPN.get_profile()
 
     typer.echo("")
+    
+    if not OpenVPN.check_cli():
+        console.print("OpenVPN is not installed. Please install it first.", style="bold red")
+        console.print("For macOS, use Homebrew: `brew install openvpn`.", style="dim")
+        console.print("For Linux, use your distribution's package manager.", style="dim")
+        console.print("For Windows, use the OpenVPN Connect client.", style="dim")
+        raise typer.Exit(code=1)
+
     subprocess.run(["sudo", "-v"])
 
     OpenVPN.flush_routes()

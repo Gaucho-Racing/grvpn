@@ -1,9 +1,15 @@
+import shutil
 import time
 import signal
 import subprocess
 import sys
 
 class OpenVPN:
+
+    @staticmethod
+    def check_cli():
+        return shutil.which("openvpn") is not None
+
     @staticmethod
     def connect(path: str, timeout: int = 30) -> subprocess.Popen | None:
         cmd = [
