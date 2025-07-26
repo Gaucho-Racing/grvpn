@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GR VPN</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: #000;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+
+      .container {
+        background: #000;
+        border-radius: 18px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.45);
+        max-width: 400px;
+        width: 90%;
+        border: 1px solid #222;
+        animation: slideUp 0.6s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .success-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #ef0da1, #7920ff);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        border: none;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(239, 13, 161, 0.7);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 10px rgba(239, 13, 161, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(239, 13, 161, 0);
+        }
+      }
+
+      .checkmark {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: bold;
+      }
+
+      h1 {
+        color: #fff;
+        margin-bottom: 1rem;
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+
+      p {
+        color: #bbb;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        font-size: 1rem;
+      }
+
+      .close-button {
+        background: none;
+        color: #fff;
+        border: 1.5px solid #a259ff;
+        padding: 10px 22px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none;
+        outline: none;
+      }
+
+      .close-button:hover {
+        background: #a259ff22;
+        border-color: #a259ff;
+        color: #a259ff;
+      }
+
+      .close-button:active {
+        background: #a259ff33;
+        color: #fff;
+      }
+
+      .auto-close {
+        margin-top: 1.2rem;
+        font-size: 0.92rem;
+        color: #666;
+      }
+
+      .countdown {
+        font-weight: bold;
+        color: #a259ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="success-icon">
+        <span class="checkmark">✓</span>
+      </div>
+      <h1>Login Successful!</h1>
+      <p>
+        You have been successfully authenticated with Sentinel. You can now
+        close this window and return to your terminal.
+      </p>
+      <div class="auto-close">
+        This window will close automatically in
+        <span class="countdown" id="countdown">5</span> seconds
+      </div>
+    </div>
+
+    <script>
+      // Auto-close countdown
+      let countdown = 5;
+      const countdownElement = document.getElementById("countdown");
+
+      const timer = setInterval(() => {
+        countdown--;
+        countdownElement.textContent = countdown;
+
+        if (countdown <= 0) {
+          clearInterval(timer);
+          window.close();
+        }
+      }, 1000);
+
+      // Also close on any click outside the button
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".close-button")) {
+          window.close();
+        }
+      });
+    </script>
+  </body>
+</html>
