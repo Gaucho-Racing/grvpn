@@ -11,7 +11,24 @@
   <img src="assets/cli.gif" alt="grvpn cli" width="48%" style="object-fit: contain;" />
 </div>
 
-grvpn is Gaucho Racing's custom VPN manager and client. It is designed to allow users to connect to Gaucho Racing's internal network and easily access AWS resources. Built on top of [OpenVPN](https://openvpn.net/), it provides a simple and easy to use interface for managing VPN connections.
+grvpn is Gaucho Racing's custom VPN manager and client. It is designed to allow users to connect to Gaucho Racing's internal network and easily access AWS resources. Built on top of [OpenVPN](https://openvpn.net/), it provides a simple interface for managing VPN profiles.
+
+### Using grvpn
+
+#### Recommended (macOS, Linux)
+
+- Install grvpn from [PyPI](https://pypi.org/project/grvpn/)
+- Run `grvpn login` to login to with Sentinel
+- Run `grvpn connect` to connect to the VPN
+- All configuration is stored in the `~/.grvpn` directory.
+
+#### Manual (Windows, iOS, Android):
+
+- Install OpenVPN Connect from [here](https://openvpn.net/client/)
+- Go to [vpn.gauchoracing.com](https://vpn.gauchoracing.com)
+- Click "Create Profile" to generate a new profile
+- Click the "Connect" button to automatically launch OpenVPN Connect
+- Alternatively, you can download the `.ovpn` file and manually import it
 
 Check out our wiki page [here](https://wiki.gauchoracing.com/books/grvpn) to learn more.
 
@@ -31,7 +48,7 @@ Check out our wiki page [here](https://wiki.gauchoracing.com/books/grvpn) to lea
 
 Start by running a local PostgreSQL database. The provided `docker-compose.yaml` let's you easily spin up a local instance.
 
-```
+```bash
 docker compose up -d
 ```
 
@@ -41,7 +58,7 @@ You should now have a database called `grvpn` running on `localhost:5432`.
 
 Create a `server/.env` file and copy in the following environment variables.
 
-```
+```bash
 ENV=DEV
 PORT=9999
 
@@ -65,7 +82,7 @@ Make sure to set the client id and secret for your application. If you don't hav
 
 Navigate to the `server/` directory and execute the following.
 
-```
+```bash
 make run
 ```
 
@@ -75,7 +92,7 @@ This will automatically install dependencies, source the `.env` file, and start 
 
 Navigate to the `web/` directory and execute the following.
 
-```
+```bash
 npm install
 npm run dev
 ```
@@ -88,7 +105,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser to see the r
 
 Navigate to the `cli/` directory and execute the following.
 
-```
+```bash
 poetry install
 poetry run grvpn --help
 ```
