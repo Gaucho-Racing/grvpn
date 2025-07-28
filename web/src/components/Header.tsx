@@ -29,6 +29,7 @@ const Header = (props: HeaderProps) => {
   });
 
   React.useEffect(() => {
+    checkConnection();
     const interval = setInterval(checkConnection, 5000);
     return () => clearInterval(interval);
   }, []);

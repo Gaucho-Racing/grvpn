@@ -6,7 +6,13 @@ import { getAxiosErrorMessage } from "@/lib/axios-error-handler";
 import { notify } from "@/lib/notify";
 import { BACKEND_URL } from "@/consts/config";
 import axios from "axios";
-import { CopyIcon, DownloadIcon, EyeIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  CopyIcon,
+  DownloadIcon,
+  ExternalLink,
+  EyeIcon,
+} from "lucide-react";
 import { formatDistanceToNow, isBefore } from "date-fns";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { QRCode } from "react-qrcode-logo";
@@ -65,6 +71,13 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ client }) => {
     }
   };
 
+  const handleConnect = async (id: string) => {
+    const token = `${currentUser.id}-${Date.now()}`;
+    const url = `${BACKEND_URL}/clients/${id}/download?token=${token}`;
+    console.log(url);
+    window.open(`openvpn://import-profile/${url}`, "_blank");
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -77,20 +90,28 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ client }) => {
               >
                 {getRelativeExpiration(client.expires_at)}
               </div>
-              <Button variant="outline" size="sm">
-                <EyeIcon className="mr-2 h-5 w-5" />
-                View
-              </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleDownload(client.id);
+                  notify.success("Downloaded profile");
                 }}
               >
                 <DownloadIcon className="mr-2 h-5 w-5" />
                 Download
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleConnect(client.id);
+                }}
+              >
+                <ExternalLink className="mr-2 h-5 w-5" />
+                Connect
               </Button>
             </div>
           </div>
@@ -159,6 +180,15 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ client }) => {
           >
             <DownloadIcon className="mr-2 h-5 w-5" />
             Download
+          </Button>
+          <Button
+            variant="outline"
+            onClick={(e) => {
+              handleConnect(client.id);
+            }}
+          >
+            <ExternalLink className="mr-2 h-5 w-5" />
+            Connect
           </Button>
         </div>
       </DialogContent>
