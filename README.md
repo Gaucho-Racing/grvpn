@@ -1,64 +1,55 @@
 # grvpn
 
-[![build](https://github.com/Gaucho-Racing/grlink/actions/workflows/build.yml/badge.svg)](https://github.com/Gaucho-Racing/grlink/actions/workflows/build.yml)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/d9d24841-17a3-42c1-8aa0-634d8fd333e8/deploy-status)](https://app.netlify.com/sites/grlink/deploys)
-[![Docker Pulls](https://img.shields.io/docker/pulls/gauchoracing/grlink?style=flat-square)](https://hub.docker.com/r/gauchoracing/grlink)
-[![Release](https://img.shields.io/github/release/gaucho-racing/grlink.svg?style=flat-square)](https://github.com/gaucho-racing/grlink/releases)
+[![build](https://github.com/Gaucho-Racing/grvpn/actions/workflows/build.yml/badge.svg)](https://github.com/Gaucho-Racing/grvpn/actions/workflows/build.yml)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/cb4594f3-e2b7-4753-b186-72824d1382cb/deploy-status)](https://app.netlify.com/projects/gr-vpn/deploys)
+[![Release](https://img.shields.io/github/release/gaucho-racing/grvpn.svg)](https://github.com/gaucho-racing/grvpn/releases)
+[![PyPI - Version](https://img.shields.io/pypi/v/grvpn)](https://pypi.org/project/grvpn/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <div style="display: flex; gap: 10px;">
-  <img src="assets/home.png" alt="GRLink Dashboard" width="49%" />
-  <img src="assets/details.png" alt="GRLink Dashboard" width="49%" />
+  <img src="assets/web.png" alt="grvpn web" width="49%" style="object-fit: contain;" />
+  <img src="assets/cli.gif" alt="grvpn cli" width="43%" style="object-fit: contain;" />
 </div>
 
-GRLink is Gaucho Racing's custom URL shortener.
+grvpn is Gaucho Racing's custom VPN manager and client. It is designed to allow users to connect to Gaucho Racing's internal network and easily access AWS resources. Built on top of [OpenVPN](https://openvpn.net/), it provides a simple and easy to use interface for managing VPN connections.
 
-Check out our wiki page [here](https://wiki.gauchoracing.com/books/grlink) to learn more.
+Check out our wiki page [here](https://wiki.gauchoracing.com/books/grvpn) to learn more.
 
 ## Getting Started
 
-### Setup local database
+### Prerequisites:
 
-Start by running SingleStore locally using the provided Docker image.
+- [Go](https://go.dev/doc/devel/release#go1.23.0) 1.23+
+- [OpenVPN](https://formulae.brew.sh/formula/openvpn) 2.6+
+  - Note: `openvpn` is not available on Windows.
+- [Node.js](https://nodejs.org/en/download/) 22+
+- [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) 10+
+- [Python](https://www.python.org/downloads/) 3.12+
+- [Poetry](https://python-poetry.org/)
+
+### 1. Setup local database
+
+Start by running a local PostgreSQL database. The provided `docker-compose.yaml` let's you easily spin up a local instance.
 
 ```
-docker run \
-    -d --name singlestoredb-dev \
-    -e ROOT_PASSWORD="password" \
-    -p 3306:3306 -p 8080:8080 -p 9000:9000 \
-    ghcr.io/singlestore-labs/singlestoredb-dev:latest
+docker compose up -d
 ```
 
-Note the `--platform linux/amd64` instruction which is required when running on Apple Silicon.
+You should now have a database called `grvpn` running on `localhost:5432`.
 
-```
-docker run \
-    -d --name singlestoredb-dev \
-    -e ROOT_PASSWORD="password" \
-    --platform linux/amd64 \
-    -p 3306:3306 -p 8080:8080 -p 9000:9000 \
-    ghcr.io/singlestore-labs/singlestoredb-dev:latest
-```
+### 2. Configure environment variables
 
-Once running, create the `grlink` database that the application is going to use. You can do this by executing the following command from the Studio UI (accessible at http://localhost:8080).
-
-```sql
-CREATE DATABASE grlink;
-```
-
-### Configure environment variables
-
-Create a `.env` file in the root level of the repository and copy in the following environemnt variables.
+Create a `server/.env` file and copy in the following environment variables.
 
 ```
 ENV=DEV
-PORT=7000
+PORT=9999
 
 DATABASE_HOST=localhost
-DATABASE_PORT=3306
-DATABASE_USER=root
+DATABASE_PORT=5432
+DATABASE_USER=postgres
 DATABASE_PASSWORD=password
-DATABASE_NAME=grlink
+DATABASE_NAME=grvpn
 
 SENTINEL_URL=https://sentinel-api.gauchoracing.com
 SENTINEL_JWKS_URL=https://sso.gauchoracing.com/.well-known/jwks.json
@@ -70,19 +61,17 @@ SENTINEL_REDIRECT_URI=http://localhost:5173/auth/login
 
 Make sure to set the client id and secret for your application. If you don't have one already, you can create one through [Sentinel](https://sso.gauchoracing.com/applications).
 
-### Start the backend
+### 3. Start the backend
 
-Make sure you have [Go](https://go.dev/) version [1.23](https://go.dev/doc/devel/release#go1.23.0) or above installed.
-
-The following command will automatically install dependencies, source the `.env` file, and start the application.
+Navigate to the `server/` directory and execute the following.
 
 ```
 make run
 ```
 
-The backend should now be listening on `localhost:7000` (or whatever you set `PORT` to).
+This will automatically install dependencies, source the `.env` file, and start the application. The backend should now be listening on `localhost:9999` (or whatever you set `PORT` to).
 
-### Start the frontend
+### 4. Start the frontend
 
 Navigate to the `web/` directory and execute the following.
 
@@ -93,7 +82,18 @@ npm run dev
 
 Make sure to update the `SENTINEL_CLIENT_ID` and `BACKEND_URL` values in `src/consts/config.tsx`.
 
-Open [http://localhost:5173](http://localhost:5173) with your browser to see the result.
+Open [http://localhost:5173](http://localhost:5173) in your browser to see the result.
+
+### 5. Start the CLI
+
+Navigate to the `cli/` directory and execute the following.
+
+```
+poetry install
+poetry run grvpn --help
+```
+
+**Note:** The CLI does not support Windows.
 
 ## Contributing
 
