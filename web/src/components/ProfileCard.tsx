@@ -6,13 +6,7 @@ import { getAxiosErrorMessage } from "@/lib/axios-error-handler";
 import { notify } from "@/lib/notify";
 import { BACKEND_URL } from "@/consts/config";
 import axios from "axios";
-import {
-  ArrowRightIcon,
-  CopyIcon,
-  DownloadIcon,
-  ExternalLink,
-  EyeIcon,
-} from "lucide-react";
+import { CopyIcon, DownloadIcon, ExternalLink } from "lucide-react";
 import { formatDistanceToNow, isBefore } from "date-fns";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { QRCode } from "react-qrcode-logo";
@@ -183,7 +177,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ client }) => {
           </Button>
           <Button
             variant="outline"
-            onClick={(e) => {
+            onClick={() => {
               handleConnect(client.id);
             }}
           >
