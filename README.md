@@ -6,7 +6,7 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/grvpn)](https://pypi.org/project/grvpn/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<div style="display: flex; gap: 10px;">
+<div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
   <img src="assets/web.png" alt="grvpn web" width="49%" style="object-fit: contain;" />
   <img src="assets/cli.gif" alt="grvpn cli" width="43%" style="object-fit: contain;" />
 </div>
