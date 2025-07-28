@@ -1,6 +1,6 @@
 # grvpn
 
-[![build](https://github.com/Gaucho-Racing/grvpn/actions/workflows/build.yml/badge.svg)](https://github.com/Gaucho-Racing/grvpn/actions/workflows/build.yml)
+[![build](https://github.com/Gaucho-Racing/grvpn/actions/workflows/build.yaml/badge.svg)](https://github.com/Gaucho-Racing/grvpn/actions/workflows/build.yaml)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/cb4594f3-e2b7-4753-b186-72824d1382cb/deploy-status)](https://app.netlify.com/projects/gr-vpn/deploys)
 [![Release](https://img.shields.io/github/release/gaucho-racing/grvpn.svg)](https://github.com/gaucho-racing/grvpn/releases)
 [![PyPI - Version](https://img.shields.io/pypi/v/grvpn)](https://pypi.org/project/grvpn/)
