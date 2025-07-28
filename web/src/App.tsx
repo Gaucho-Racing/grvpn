@@ -56,7 +56,12 @@ function App() {
           },
         },
       );
-      setClients(response.data);
+      setClients(
+        response.data.sort(
+          (a: Client, b: Client) =>
+            new Date(b.expires_at).getTime() - new Date(a.expires_at).getTime(),
+        ),
+      );
     } catch (error: any) {
       notify.error(getAxiosErrorMessage(error));
       console.error(error);
@@ -73,7 +78,12 @@ function App() {
           },
         },
       );
-      setExpiredClients(response.data);
+      setExpiredClients(
+        response.data.sort(
+          (a: Client, b: Client) =>
+            new Date(b.expires_at).getTime() - new Date(a.expires_at).getTime(),
+        ),
+      );
     } catch (error: any) {
       notify.error(getAxiosErrorMessage(error));
       console.error(error);
