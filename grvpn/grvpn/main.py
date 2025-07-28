@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import os
 import signal
 import subprocess
 import sys
@@ -114,6 +115,17 @@ def connect():
     OpenVPN.flush_routes()
     OpenVPN.reset_dns()
     typer.echo("Disconnected.")
+
+@app.command()
+def reset():
+    """Reset saved profiles and local network settings."""
+    OpenVPN.flush_routes()
+    OpenVPN.reset_dns()
+    app_dir = os.path.expanduser("~/.grvpn")
+    if os.path.exists(app_dir):
+        for file in os.listdir(app_dir):
+            os.remove(os.path.join(app_dir, file))
+    typer.echo("Reset complete.")
 
 def render_login(user):
     text = Text()
