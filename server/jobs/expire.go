@@ -4,6 +4,7 @@ import (
 	"grvpn/utils"
 	"strconv"
 	"sync"
+	"time"
 
 	"grvpn/service"
 
@@ -22,6 +23,9 @@ func RegisterExpireJob() {
 			defer wg.Done()
 			for _, client := range service.GetAllExpiredClients() {
 				service.RevokeVpnProfile(client.ID)
+				if time.Since(client.ExpiresAt).Hours() > 24 {
+					service.DeleteClient(client.ID)
+				}
 			}
 		}()
 		wg.Wait()
