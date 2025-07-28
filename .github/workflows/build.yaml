@@ -1,0 +1,68 @@
+name: build
+run-name: Triggered by ${{ github.event_name }} to ${{ github.ref }} by @${{ github.actor }}
+
+on: [push]
+
+jobs:
+  web_build_job:
+    runs-on: ubuntu-latest
+    name: web
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+      - name: Build web
+        run: |
+          cd web
+          npm ci
+          npm run build
+
+  go_build_job:
+    runs-on: ubuntu-latest
+    name: server
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.23.0"
+      - name: Build server
+        run: |
+          go get .
+          go build
+
+  cli_build_job:
+    runs-on: ubuntu-latest
+    name: cli
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v4
+        with:
+          poetry-version: "2.0.0"
+      - name: Build CLI
+        run: |
+          cd grvpn
+          poetry install
+          poetry build
