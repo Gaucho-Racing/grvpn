@@ -107,6 +107,7 @@ def connect():
                 live.update(render_connection(ip, connected_time, expires_at))
                 time.sleep(1)
     except KeyboardInterrupt:
+        subprocess.run(["sudo", "-v"])
         typer.echo("")
         with console.status("Disconnecting...", spinner="dots"):
             proc.send_signal(signal.SIGINT)
