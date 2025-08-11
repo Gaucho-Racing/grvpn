@@ -22,8 +22,10 @@ func RegisterExpireJob() {
 		go func() {
 			defer wg.Done()
 			for _, client := range service.GetAllExpiredClients() {
+				utils.SugarLogger.Infof("Found expired client: %v (expired %d hours ago)", client, time.Since(client.ExpiresAt).Hours())
 				service.RevokeVpnProfile(client.ID)
 				if time.Since(client.ExpiresAt).Hours() > 24 {
+					utils.SugarLogger.Infof("Deleting expired client: %v", client)
 					service.DeleteClient(client.ID)
 				}
 			}
