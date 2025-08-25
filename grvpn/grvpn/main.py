@@ -15,6 +15,7 @@ from rich.text import Text
 from grvpn.openvpn import OpenVPN
 from grvpn.vpn import VPN
 from grvpn.auth import Sentinel, SENTINEL_AUTH_URL
+from grvpn.sudo_manager import SudoManager
 
 app = typer.Typer()
 console = Console()
@@ -82,7 +83,9 @@ def connect():
         console.print("For Windows, use the OpenVPN Connect client.", style="dim")
         raise typer.Exit(code=1)
 
-    subprocess.run(["sudo", "-v"])
+    if not SudoManager.ensure_sudo_access():
+        typer.echo("Failed to authenticate sudo access.")
+        raise typer.Exit(code=1)
 
     OpenVPN.flush_routes()
     with console.status("Connecting to the Gaucho Racing VPN...", spinner="dots"):
@@ -106,16 +109,31 @@ def connect():
             while proc.poll() is None:
                 live.update(render_connection(ip, connected_time, expires_at))
                 time.sleep(1)
+                if int(time.time() - connected_time) % 20 == 0:
+                    connected = VPN.test_connection()
+                    if connected and "ip" in connected:
+                        ip = connected['ip']
+                    else:
+                        ip = "0.0.0.0"
     except KeyboardInterrupt:
-        subprocess.run(["sudo", "-v"])
         typer.echo("")
-        with console.status("Disconnecting...", spinner="dots"):
+    
+    # Always cleanup when exiting (whether by Ctrl+C or connection loss)
+    with console.status("Disconnecting...", spinner="dots"):
+        if proc.poll() is None:
             proc.send_signal(signal.SIGINT)
             proc.wait()
+        OpenVPN.flush_routes()
+        OpenVPN.reset_dns()
 
+    typer.echo("Disconnected.")
+
+@app.command()
+def flush():
+    """Flush routes and reset DNS."""
     OpenVPN.flush_routes()
     OpenVPN.reset_dns()
-    typer.echo("Disconnected.")
+    typer.echo("Flushed routes and reset DNS.")
 
 @app.command()
 def reset():
@@ -149,11 +167,19 @@ def render_connection(ip, connected_time, expires_at):
     expires_str = f"{hrs:02}:{mins:02}:{secs:02}"
 
     text = Text()
-    text.append("Connected to the Gaucho Racing VPN.\n\n", style="bold magenta")
-    text.append(f"Public IP: {ip}\n", style="")
+    if ip == "35.162.142.32":
+        text.append("Connected to the Gaucho Racing VPN.\n\n", style="bold magenta")
+        text.append(f"Public IP: {ip}\n", style="")
+    else:
+        text.append("Not connected to the Gaucho Racing VPN.\n\n", style="bold red")
+        text.append(f"Public IP: {ip}\n", style="")
     text.append(f"Elapsed Time: {timer_str}\n", style="")
     text.append(f"Expires in: {expires_str}\n", style="")
-    text.append("\nPress Ctrl+C to disconnect", style="dim")
+
+    if ip == "35.162.142.32":
+        text.append("\nPress Ctrl+C to disconnect", style="dim")
+    else:
+        text.append("\nPress Ctrl+C to exit", style="dim")
 
     return Panel(Align.left(text))
 

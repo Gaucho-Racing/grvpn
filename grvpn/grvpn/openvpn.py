@@ -3,6 +3,7 @@ import time
 import signal
 import subprocess
 import sys
+from grvpn.sudo_manager import SudoManager
 
 class OpenVPN:
 
@@ -13,7 +14,7 @@ class OpenVPN:
     @staticmethod
     def connect(path: str, timeout: int = 30) -> subprocess.Popen | None:
         cmd = [
-            "sudo", "openvpn",
+            "openvpn",
             "--config", path,
             "--dev", "tun_grvpn",
             "--connect-retry-max", "3",
@@ -21,9 +22,13 @@ class OpenVPN:
             "--script-security", "2",
             "--route-delay", "1"
         ]
-        proc = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
-        )
+        try:
+            proc = SudoManager.start_sudo_process(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+            )
+        except RuntimeError as e:
+            print(f"Failed to start OpenVPN: {e}")
+            return None
 
         start = time.time()
         try:
@@ -42,22 +47,31 @@ class OpenVPN:
     
     @staticmethod
     def flush_routes():
-        subprocess.run("sudo pkill openvpn", shell=True)
-        for i in range(10):
-            subprocess.run(f"sudo ifconfig utun{i} down", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run("sudo route delete -net 0.0.0.0/1 10.8.0.1", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run("sudo route delete -net 128.0.0.0/1 10.8.0.1", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            SudoManager.run_sudo_shell_command("pkill openvpn")
+            for i in range(10):
+                SudoManager.run_sudo_shell_command(f"ifconfig utun{i} down", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            SudoManager.run_sudo_shell_command("route delete -net 0.0.0.0/1 10.8.0.1", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            SudoManager.run_sudo_shell_command("route delete -net 128.0.0.0/1 10.8.0.1", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except RuntimeError as e:
+            print(f"Failed to flush routes: {e}")
 
     @staticmethod
     def set_dns():
         if sys.platform == "darwin":
-            subprocess.run("sudo networksetup -setdnsservers Wi-Fi 10.8.0.1", shell=True)
+            try:
+                SudoManager.run_sudo_shell_command("networksetup -setdnsservers Wi-Fi 10.8.0.1")
+            except RuntimeError as e:
+                print(f"Failed to set DNS: {e}")
         elif sys.platform == "linux":
             pass
     
     @staticmethod
     def reset_dns():
         if sys.platform == "darwin":
-            subprocess.run("sudo networksetup -setdnsservers Wi-Fi empty", shell=True)
+            try:
+                SudoManager.run_sudo_shell_command("networksetup -setdnsservers Wi-Fi empty")
+            except RuntimeError as e:
+                print(f"Failed to reset DNS: {e}")
         elif sys.platform == "linux":
             pass

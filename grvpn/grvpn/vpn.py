@@ -9,8 +9,12 @@ class VPN:
 
     @staticmethod
     def test_connection():
-        response = requests.get("https://vpn.gauchoracing.com/api/test")
-        return response.json()
+        try:
+            response = requests.get("https://vpn.gauchoracing.com/api/test", timeout=10)
+            response.raise_for_status()
+            return response.json()
+        except:
+            return None
 
     @staticmethod
     def get_profile():
