@@ -1,6 +1,6 @@
 [project]
 name = "grvpn"
-version = "1.4.1"
+version = "1.5.0"
 description = "Gaucho Racing's custom VPN manager and client, built on top of OpenVPN."
 authors = [
     {name = "Bharat Kathi",email = "bharat1031@gmail.com"}
